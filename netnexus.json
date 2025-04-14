@@ -2,13 +2,11 @@
   "users": [
     {
       "username": "admin",
-      "password": "admin123",
-      "type": "admin"
+      "password": "admin123"
     },
     {
       "username": "john_doe",
       "password": "pass123",
-      "type": "user",
       "amount": 100.0,
       "userTime": "1:00",
       "logins": 5,
