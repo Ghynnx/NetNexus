@@ -6,15 +6,16 @@ import java.text.ParseException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import java.io.FileWriter;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author User
@@ -25,11 +26,12 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     private static String usname, pass;
-    
-    private static final String filepath = "C:\\Users\\User\\Documents\\NetBeansProjects\\NetNexus\\src\\netnexus.json";
+
+    private static final String filepath = "src\\netnexus.json";
     private static JSONParser jsonParser = new JSONParser();
     private static JSONObject record = new JSONObject();
     private static JSONArray users = new JSONArray();
+
     public Login() {
         initComponents();
     }
@@ -92,110 +94,118 @@ public class Login extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(174, 174, 174)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(passwrd, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(94, 94, 94)
-                        .addComponent(clear)
-                        .addGap(66, 66, 66)
-                        .addComponent(login)))
-                .addContainerGap(88, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(174, 174, 174)
+                                                .addComponent(jLabel1))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(109, 109, 109)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel2)
+                                                        .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel3)
+                                                        .addComponent(passwrd, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(94, 94, 94)
+                                                .addComponent(clear)
+                                                .addGap(66, 66, 66)
+                                                .addComponent(login)))
+                                .addContainerGap(88, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(jLabel1)
-                .addGap(26, 26, 26)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(passwrd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clear)
-                    .addComponent(login))
-                .addContainerGap(51, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(56, 56, 56)
+                                .addComponent(jLabel1)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(passwrd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(clear)
+                                        .addComponent(login))
+                                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>                        
 
-    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-    }                                        
+    }
 
-    private void passwrdActionPerformed(java.awt.event.ActionEvent evt) {                                        
+    private void passwrdActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-    }                                       
+    }
 
-    private void loginActionPerformed(java.awt.event.ActionEvent evt) {                                      
-
-        try {
+    private void loginActionPerformed(java.awt.event.ActionEvent evt) {
+        try { // Check for any necessary file operations or preparations before adding data
             usname = username.getText();
             pass = passwrd.getText();
 
-            filecheck();
+            try {
+                filecheck();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-            int check = 0;
+            int checker = 0;
             for (int a = 0; a < users.size(); a++) {
                 JSONObject userobject = (JSONObject) users.get(a);
-                String foundusname = (String) userobject.get("username");
-                String foundpass = (String) userobject.get("password");
-
-                if (usname.equals(foundusname) && pass.equals(foundpass)) {
-                    check++;
+                String searcheduname = (String) userobject.get("username");
+                String searchedpswd = (String) userobject.get("password");
+                if (usname.equals(searcheduname) && pass.equals(searchedpswd)) {
+                    checker++;
+                    long logins = (long) userobject.getOrDefault("logins", 0L);
+                    userobject.put("logins", logins + 1);
                     break;
                 }
             }
-            if (check == 0) {
-                member a = new member();
-                a.setVisible(true);
-                setVisible(false);
 
+            if (checker == 0) {
+                JOptionPane.showMessageDialog(this, "No account has been found.", "Login Failed", JOptionPane.ERROR_MESSAGE); // Catch any IOExceptions that may occur during file operations and log the error
             } else {
-                Admin x = new Admin();
+                dispose(); // if user data found login window closes and direct to the dashboard frame
+                Dashboard x = new Dashboard();
                 x.setVisible(true);
-                setVisible(false);
-                new Login().setVisible(false);
 
             }
-        } catch (IOException | ParseException | org.json.simple.parser.ParseException e) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-        }    }                                         
+
+            save();
+        } catch (IOException | org.json.simple.parser.ParseException ex) { // Catch any IOExceptions that may occur during file operations and log the error
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     public static String getusname() {
         return usname;
-    }                                     
+    }
 
-    private void clearActionPerformed(java.awt.event.ActionEvent evt) {                                      
+    private void clearActionPerformed(java.awt.event.ActionEvent evt) {
         username.setText("");
         passwrd.setText("");
-    }                                     
+    }
 
     /**
      * @param args the command line arguments
@@ -225,14 +235,12 @@ public class Login extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Login().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Login().setVisible(true);
         });
     }
-public static void filecheck() throws FileNotFoundException, IOException, ParseException, org.json.simple.parser.ParseException {
+
+    public static void filecheck() throws FileNotFoundException, IOException, ParseException, org.json.simple.parser.ParseException {
         FileReader reader = new FileReader(filepath);
 
         if (reader.ready()) {
@@ -245,11 +253,18 @@ public static void filecheck() throws FileNotFoundException, IOException, ParseE
 
             if (!line.equals("")) {
                 reader.close();
-                FileReader read = new FileReader(filepath);
-                record = (JSONObject) jsonParser.parse(read);
-                users = (JSONArray) record.get("users");
-                read.close();
+                try (FileReader read = new FileReader(filepath)) {
+                    record = (JSONObject) jsonParser.parse(read);
+                    users = (JSONArray) record.get("users");
+                }
             }
+        }
+    }
+
+    public static void save() throws IOException {
+        try (FileWriter file = new FileWriter(filepath)) {
+            file.write(record.toJSONString());
+
         }
     }
     // Variables declaration - do not modify                     
