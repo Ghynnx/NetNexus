@@ -124,7 +124,7 @@ public class Members extends javax.swing.JFrame {
             }
         });
 
-        DscntTF.setBackground(new java.awt.Color(14, 14, 14));
+        DscntTF.setBackground(new java.awt.Color(0, 0, 0));
         DscntTF.setForeground(new java.awt.Color(255, 255, 255));
         DscntTF.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         DscntTF.addActionListener(new java.awt.event.ActionListener() {
@@ -133,7 +133,7 @@ public class Members extends javax.swing.JFrame {
             }
         });
 
-        LogsTF.setBackground(new java.awt.Color(14, 14, 14));
+        LogsTF.setBackground(new java.awt.Color(0, 0, 0));
         LogsTF.setForeground(new java.awt.Color(255, 255, 255));
         LogsTF.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         LogsTF.addActionListener(new java.awt.event.ActionListener() {
@@ -180,7 +180,7 @@ public class Members extends javax.swing.JFrame {
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("USERNAME");
 
-        RnkTF.setBackground(new java.awt.Color(14, 14, 14));
+        RnkTF.setBackground(new java.awt.Color(0, 0, 0));
         RnkTF.setForeground(new java.awt.Color(255, 255, 255));
         RnkTF.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         RnkTF.addActionListener(new java.awt.event.ActionListener() {
@@ -189,7 +189,7 @@ public class Members extends javax.swing.JFrame {
             }
         });
 
-        TimeTF.setBackground(new java.awt.Color(14, 14, 14));
+        TimeTF.setBackground(new java.awt.Color(0, 0, 0));
         TimeTF.setForeground(new java.awt.Color(255, 255, 255));
         TimeTF.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         TimeTF.addActionListener(new java.awt.event.ActionListener() {
@@ -361,6 +361,16 @@ public class Members extends javax.swing.JFrame {
             return;
         }
 
+// Parse amount
+        String amountStr = AmtTF.getText().trim();
+        int amount = 0;
+        try {
+            amount = Integer.parseInt(amountStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid amount entered.");
+            return;
+        }
+
         try {
             File file = new File(filepath2);
             if (!file.exists()) {
@@ -378,6 +388,7 @@ public class Members extends javax.swing.JFrame {
 
             JSONObject jsonObject = new JSONObject(jsonBuilder.toString());
             JSONArray users = jsonObject.getJSONArray("users");
+            JSONArray sessions = jsonObject.getJSONArray("sessions");
 
             boolean userFound = false;
 
@@ -386,11 +397,29 @@ public class Members extends javax.swing.JFrame {
                 if (user.getString("username").equalsIgnoreCase(enteredUsername)) {
                     userFound = true;
 
-                    // Update login count
+                    // Parse existing userTime
+                    String currentTime = user.getString("userTime"); // e.g. "1:30"
+                    String[] timeParts = currentTime.split(":");
+                    int currentHours = Integer.parseInt(timeParts[0]);
+                    int currentMinutes = Integer.parseInt(timeParts[1]);
+                    int currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+                    // Convert amount to added minutes (₱10 = 30 minutes)
+                    int addedMinutes = (amount * 30) / 10;
+
+                    // New total time
+                    int newTotalMinutes = currentTotalMinutes + addedMinutes;
+                    int newHours = newTotalMinutes / 60;
+                    int newMinutes = newTotalMinutes % 60;
+
+                    String newUserTime = String.format("%d:%02d", newHours, newMinutes);
+                    TimeTF.setText(newUserTime); // Show new time in GUI
+
+                    // Update logins, discount, rank
                     int logins = user.getInt("logins") + 1;
                     user.put("logins", logins);
+                    user.put("userTime", newUserTime);
 
-                    // Determine rank and discount
                     String rank = "Unranked";
                     int discount = 0;
                     if (logins >= 30) {
@@ -404,20 +433,9 @@ public class Members extends javax.swing.JFrame {
                         discount = 5;
                     }
 
-                    user.put("discount", discount); // Save to JSON
+                    user.put("discount", discount);
 
-                    String newUserTime = TimeTF.getText().trim();
-                    user.put("userTime", newUserTime);
-
-                    JSONArray sessions = jsonObject.getJSONArray("sessions");
-
-                    for (int s = 0; s < sessions.length(); s++) {
-                        JSONObject session = sessions.getJSONObject(s);
-                        if (session.getString("username").equalsIgnoreCase(enteredUsername)) {
-                            session.put("remainingTime", newUserTime);
-                            break;
-                        }
-                    }
+                    // Update session time
                     for (int s = 0; s < sessions.length(); s++) {
                         JSONObject session = sessions.getJSONObject(s);
                         if (session.getString("username").equalsIgnoreCase(enteredUsername)) {
@@ -426,7 +444,7 @@ public class Members extends javax.swing.JFrame {
                         }
                     }
 
-                    // Save back to file
+                    // Save updated JSON
                     FileWriter writer = new FileWriter(file);
                     writer.write(jsonObject.toString(4));
                     writer.close();
@@ -435,6 +453,7 @@ public class Members extends javax.swing.JFrame {
                     LogsTF.setText(String.valueOf(logins));
                     RnkTF.setText(rank);
                     DscntTF.setText(discount + "%");
+
                     break;
                 }
             }
