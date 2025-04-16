@@ -1,27 +1,26 @@
 {
-  "users": [
-    {
-      "username": "admin",
-      "password": "admin123"
-    },
-    {
-      "username": "john_doe",
-      "password": "pass123",
-      "amount": 100.0,
-      "userTime": "1:00",
-      "logins": 5,
-      "discount": 5,
-      "pcNo": 1,
-      "active": false,
-      "lastLogin": "2025-04-08T11:00:00"
-    }
-  ],
-  "sessions": [
-    {
-      "username": "john_doe",
-      "pcNo": 1,
-      "startTime": "2025-04-08T11:00:00",
-      "remainingTime": "1:00"
-    }
-  ]
+    "sessions": [{
+        "pcNo": 1,
+        "startTime": "2025-04-08T11:00:00",
+        "username": "john_doe",
+        "remainingTime": "5:00"
+    }],
+    "users": [
+        {
+            "password": "admin123",
+            "username": "admin"
+        },
+        {
+            "pcNo": 1,
+            "lastLogin": "2025-04-08T11:00:00",
+            "password": "pass123",
+            "amount": 100,
+            "userTime": "5:00",
+            "discount": 0,
+            "active": false,
+            "VipStatus": "Regular",
+            "logins": 2,
+            "username": "john_doe"
+        }
+    ]
 }
