@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.TimerTask;
 import javax.swing.JOptionPane;
+import java.util.Timer;
 import javax.swing.table.DefaultTableModel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -27,6 +29,7 @@ import org.json.simple.parser.ParseException;
 public class monitorPc extends javax.swing.JFrame {
 
     private static final String filepath = "C:\\Users\\User\\Documents\\NetBeansProjects\\NetNexus\\src\\netnexus.json";
+    private Timer autoLogoutTimer;
 
     /**
      * Creates new form monitorPc
@@ -34,9 +37,9 @@ public class monitorPc extends javax.swing.JFrame {
     public monitorPc() {
         initComponents();
         loadUserData();
-}
-     // Load JSON data into jTable1
-    
+        startAutoLogoutTimer();
+    }
+    // Load JSON data into jTable1
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -166,9 +169,9 @@ public class monitorPc extends javax.swing.JFrame {
 
     private void backBtn2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
 
-    Admin adminScreen = new Admin();
-    adminScreen.setVisible(true);
-    this.dispose(); // Close the current window
+        Admin adminScreen = new Admin();
+        adminScreen.setVisible(true);
+        this.dispose(); // Close the current window
 
     }                                        
 
@@ -177,7 +180,8 @@ public class monitorPc extends javax.swing.JFrame {
     }                                      
 
     private void refBtnActionPerformed(java.awt.event.ActionEvent evt) {                                       
-       refreshTableData();
+        loadUserData(); // Reuse the existing method
+        JOptionPane.showMessageDialog(this, "Table refreshed successfully.");
     }                                      
 
     /**
@@ -213,121 +217,212 @@ public class monitorPc extends javax.swing.JFrame {
         });
     }
 
-private void loadUserData() {
-    try {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
-            return;
+    // Start a timer to periodically check and log out users with remainingTime = 0
+    private void startAutoLogoutTimer() {
+        if (autoLogoutTimer != null) {
+            autoLogoutTimer.cancel(); // Cancel any existing timer
         }
 
-        // Parse JSON file
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
-        JSONArray users = (JSONArray) jsonObject.get("users");
+        autoLogoutTimer = new Timer(true); // Run as a daemon thread
+        autoLogoutTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    checkAndLogoutUsers();
+                } catch (Exception e) {
+                    System.err.println("Error in TimerTask: " + e.getMessage());
+                }
+            }
+        }, 0, 1000); // Check every second
+    }
 
-        // Clear existing rows in the table
-        DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
-        tableModel.setRowCount(0);
-
-        // Populate table with only active users
-        for (Object obj : users) {
-            JSONObject user = (JSONObject) obj;
-            Boolean isActive = (Boolean) user.get("active");
-
-            // Skip inactive users
-            if (isActive == null || !isActive) {
-                continue;
+    // Method to check remaining time and log out users
+    private void checkAndLogoutUsers() {
+        try {
+            File file = new File(filepath);
+            if (!file.exists()) {
+                return; // Exit if file doesn't exist
             }
 
-            String pcNo = "PC-" + (users.indexOf(obj) + 1); // Placeholder PC number
-            String username = (String) user.get("username");
-            String remainingTime = (String) user.get("userTime");
-            String balance = user.containsKey("balance") ? (String) user.get("balance") : "N/A"; // Optional field
+            // Parse JSON file
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+            JSONArray users = (JSONArray) jsonObject.get("users");
+            boolean dataUpdated = false;
 
-            // Handle null 'logins' by defaulting to 0
-            Long loginsLong = (Long) user.get("logins");
-            int logins = (loginsLong != null) ? loginsLong.intValue() : 0;
+            for (Object obj : users) {
+                JSONObject user = (JSONObject) obj;
+                Boolean isActive = (Boolean) user.get("active");
 
-            String rank = determineRank(logins);
+                if (isActive != null && isActive) {
+                    String startTimeStr = (String) user.get("startTime"); // Assuming startTime is stored as HH:MM:SS
+                    String allocatedDurationStr = (String) user.get("allocatedDuration"); // Assuming duration is HH:MM:SS
 
-            // Add row to the table
-            tableModel.addRow(new Object[]{pcNo, username, remainingTime, balance, logins, rank});
-        }
-    } catch (HeadlessException | IOException | ParseException e) {
-        JOptionPane.showMessageDialog(this, "Error loading user data: " + e.getMessage());
-    }
-}
-// Helper method to determine rank based on logins
-private String determineRank(int logins) {
-    if (logins >= 30) {
-        return "Gold";
-    } else if (logins >= 20) {
-        return "Silver";
-    } else if (logins >= 10) {
-        return "Bronze";
-    } else {
-        return "Unranked";
-    }
-}
-private void forceLogoutUser() {
-    int selectedRow = jTable1.getSelectedRow();
-    if (selectedRow == -1) {
-        JOptionPane.showMessageDialog(this, "Please select a user to force logout.");
-        return;
-    }
+                    // Convert times to seconds
+                    int startTime = parseTimeToSeconds(startTimeStr);
+                    int allocatedDuration = parseTimeToSeconds(allocatedDurationStr);
+                    int currentTime = (int) (System.currentTimeMillis() / 1000);
 
-    String username = (String) jTable1.getValueAt(selectedRow, 1); // Username is in column 1
+                    // Calculate elapsed time and remaining time
+                    int elapsedTime = currentTime - startTime;
+                    int remainingTime = allocatedDuration - elapsedTime;
 
-    try {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
-            return;
-        }
+                    if (remainingTime > 0) {
+                        user.put("remainingTime", formatSecondsToTime(remainingTime));
+                        dataUpdated = true;
+                    } else {
+                        user.put("active", false); // Log out the user
+                        user.put("remainingTime", "00:00:00");
+                        dataUpdated = true;
 
-        // Parse JSON file
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
-        JSONArray users = (JSONArray) jsonObject.get("users");
-
-        boolean userFound = false;
-
-        // Update user data to set 'active' to false
-        for (Object obj : users) {
-            JSONObject user = (JSONObject) obj;
-            if (username.equalsIgnoreCase((String) user.get("username"))) {
-                userFound = true;
-
-                // Set active to false and reset remaining time
-                user.put("active", false);
-                user.put("remainingTime", "0:00"); // Optional: Reset time
-                break;
+                        System.out.println("User " + user.get("username") + " logged out automatically.");
+                    }
+                }
             }
-        }
 
-        if (!userFound) {
-            JOptionPane.showMessageDialog(this, "User not found.");
+            if (dataUpdated) {
+                try (FileWriter writer = new FileWriter(file)) {
+                    writer.write(jsonObject.toJSONString());
+                }
+                loadUserData(); // Refresh table
+            }
+        } catch (IOException | ParseException e) {
+            System.err.println("Error checking user time: " + e.getMessage());
+        }
+    }
+
+    // Utility to parse time string (HH:MM:SS) to seconds
+    private int parseTimeToSeconds(String time) {
+        try {
+            String[] parts = time.split(":");
+            int hours = Integer.parseInt(parts[0]);
+            int minutes = Integer.parseInt(parts[1]);
+            int seconds = Integer.parseInt(parts[2]);
+            return (hours * 3600) + (minutes * 60) + seconds;
+        } catch (NumberFormatException e) {
+            return 0; // Return 0 if parsing fails
+        }
+    }
+
+    // Utility to format seconds into time string (HH:MM:SS)
+    private String formatSecondsToTime(int seconds) {
+        int hours = seconds / 3600;
+        seconds %= 3600;
+        int minutes = seconds / 60;
+        seconds %= 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    private void forceLogoutUser() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a user to force logout.");
             return;
         }
 
-        // Write updated JSON back to file
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(jsonObject.toJSONString());
+        String username = (String) jTable1.getValueAt(selectedRow, 1); // Username is in column 1
+
+        try {
+            File file = new File(filepath);
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
+                return;
+            }
+
+            // Parse JSON file
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+            JSONArray users = (JSONArray) jsonObject.get("users");
+
+            boolean userFound = false;
+
+            // Update user data to set 'active' to false
+            for (Object obj : users) {
+                JSONObject user = (JSONObject) obj;
+                if (username.equalsIgnoreCase((String) user.get("username"))) {
+                    userFound = true;
+
+                    // Set active to false and reset remaining time
+                    user.put("active", false);
+                    user.put("remainingTime", "00:00:00"); // Reset time
+                    break;
+                }
+            }
+
+            if (!userFound) {
+                JOptionPane.showMessageDialog(this, "User not found.");
+                return;
+            }
+
+            // Write updated JSON back to file
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(jsonObject.toJSONString());
+            }
+
+            // Refresh table to remove the logged-out user
+            loadUserData();
+
+            JOptionPane.showMessageDialog(this, "User " + username + " has been logged out.");
+        } catch (HeadlessException | IOException | ParseException e) {
+            JOptionPane.showMessageDialog(this, "Error during force logout: " + e.getMessage());
         }
-
-        // Refresh table to remove the logged-out user
-        loadUserData();
-
-        JOptionPane.showMessageDialog(this, "User " + username + " has been logged out.");
-    } catch (HeadlessException | IOException | ParseException e) {
-        JOptionPane.showMessageDialog(this, "Error during force logout: " + e.getMessage());
     }
-}
-private void refreshTableData() {
-    loadUserData(); // Reuse the existing method
-    JOptionPane.showMessageDialog(this, "Table refreshed successfully.");
-}
+
+    private void loadUserData() {
+        try {
+            File file = new File(filepath);
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
+                return;
+            }
+
+            // Parse JSON file
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+            JSONArray users = (JSONArray) jsonObject.get("users");
+
+            // Clear existing rows in the table
+            DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
+            tableModel.setRowCount(0);
+
+            // Populate table with only active users
+            for (Object obj : users) {
+                JSONObject user = (JSONObject) obj;
+                Boolean isActive = (Boolean) user.get("active");
+
+                if (isActive != null && isActive) {
+                    String pcNo = "PC-" + user.get("pcNo");
+                    String username = (String) user.get("username");
+                    String remainingTime = (String) user.get("remainingTime");
+                    String balance = user.containsKey("amount") ? String.valueOf(user.get("amount")) : "N/A";
+
+                    Long loginsLong = (Long) user.get("logins");
+                    int logins = (loginsLong != null) ? loginsLong.intValue() : 0;
+
+                    String rank = determineRank(logins);
+
+                    // Add row to the table
+                    tableModel.addRow(new Object[]{pcNo, username, remainingTime, balance, logins, rank});
+                }
+            }
+        } catch (HeadlessException | IOException | ParseException e) {
+            JOptionPane.showMessageDialog(this, "Error loading user data: " + e.getMessage());
+        }
+    }
+
+    // Helper method to determine rank based on logins
+    private String determineRank(int logins) {
+        if (logins >= 30) {
+            return "Gold";
+        } else if (logins >= 20) {
+            return "Silver";
+        } else if (logins >= 10) {
+            return "Bronze";
+        } else {
+            return "Unranked";
+        }
+    }
+
     // Variables declaration - do not modify                     
     private javax.swing.JButton backBtn2;
     private javax.swing.JPanel jPanel1;
