@@ -23,8 +23,6 @@ import java.awt.CardLayout;
  */
 public class mgusers extends javax.swing.JFrame {
 
-    private static String usname, pass, type = "admin";
-
     private static String filepath = "src\\netnexus.json";
     private static JSONParser jsonParser = new JSONParser();
     private static JSONObject record = new JSONObject();
@@ -50,6 +48,8 @@ public class mgusers extends javax.swing.JFrame {
         SrchBttn = new javax.swing.JButton();
         DltBttn = new javax.swing.JButton();
         backbtn1 = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         addpnl = new javax.swing.JPanel();
         AddUsnTF = new javax.swing.JTextField();
@@ -68,19 +68,19 @@ public class mgusers extends javax.swing.JFrame {
         editpnl = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        EdtUsnTF = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        EdtNewUsnTF = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
+        EdtBlncTF = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        EdtCb = new javax.swing.JComboBox<>();
         jLabel16 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        EdtPssTF = new javax.swing.JTextField();
+        NewLogDtTF = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        EdtClrBttn = new javax.swing.JButton();
+        SveBttn = new javax.swing.JButton();
         deletepnl = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         DltTF = new javax.swing.JTextField();
@@ -95,10 +95,13 @@ public class mgusers extends javax.swing.JFrame {
         SrchUserBttn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(14, 14, 14));
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(5, 5, 5));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
 
+        AddBttn.setBackground(new java.awt.Color(51, 51, 51));
+        AddBttn.setForeground(new java.awt.Color(255, 255, 255));
         AddBttn.setText("Add User");
         AddBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -106,6 +109,8 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        EdtBttn.setBackground(new java.awt.Color(51, 51, 51));
+        EdtBttn.setForeground(new java.awt.Color(255, 255, 255));
         EdtBttn.setText("Edit User");
         EdtBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,6 +118,8 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        SrchBttn.setBackground(new java.awt.Color(51, 51, 51));
+        SrchBttn.setForeground(new java.awt.Color(255, 255, 255));
         SrchBttn.setText("Search User");
         SrchBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,6 +127,8 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        DltBttn.setBackground(new java.awt.Color(51, 51, 51));
+        DltBttn.setForeground(new java.awt.Color(255, 255, 255));
         DltBttn.setText("Delete User");
         DltBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,6 +136,8 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        backbtn1.setBackground(new java.awt.Color(51, 51, 51));
+        backbtn1.setForeground(new java.awt.Color(255, 255, 255));
         backbtn1.setText("Back");
         backbtn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,30 +145,45 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(0, 0, 255));
+        jLabel18.setText("NET");
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel19.setText("NEXUS");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(46, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(EdtBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(AddBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(SrchBttn, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(DltBttn, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(30, 30, 30))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(backbtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(backbtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(DltBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel19))
+                    .addComponent(AddBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(EdtBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(SrchBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 38, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addComponent(backbtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
+                .addGap(43, 43, 43)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(jLabel19))
+                .addGap(49, 49, 49)
                 .addComponent(AddBttn)
                 .addGap(18, 18, 18)
                 .addComponent(EdtBttn)
@@ -170,6 +196,10 @@ public class mgusers extends javax.swing.JFrame {
 
         jPanel2.setLayout(new java.awt.CardLayout());
 
+        addpnl.setBackground(new java.awt.Color(14, 14, 14));
+
+        AddUsnTF.setBackground(new java.awt.Color(51, 51, 51));
+        AddUsnTF.setForeground(new java.awt.Color(255, 255, 255));
         AddUsnTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 AddUsnTFActionPerformed(evt);
@@ -177,30 +207,59 @@ public class mgusers extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Add User");
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Username");
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Password:");
 
+        AddPssTF.setBackground(new java.awt.Color(51, 51, 51));
+        AddPssTF.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Balance:");
 
+        AddBlncTF.setBackground(new java.awt.Color(51, 51, 51));
+        AddBlncTF.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Login Date:");
 
+        AddLoginDteTF.setBackground(new java.awt.Color(51, 51, 51));
+        AddLoginDteTF.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("VIP Status:");
 
-        vipcmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Bronze", "Silver", "Gold" }));
+        vipcmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Regular", "Bronze", "Silver", "Gold" }));
 
+        clrbtn.setBackground(new java.awt.Color(255, 0, 0));
+        clrbtn.setForeground(new java.awt.Color(255, 255, 255));
         clrbtn.setText("Clear");
+        clrbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clrbtnActionPerformed(evt);
+            }
+        });
 
+        addbtn.setBackground(new java.awt.Color(56, 182, 255));
+        addbtn.setForeground(new java.awt.Color(255, 255, 255));
         addbtn.setText("Add");
+        addbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addbtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout addpnlLayout = new javax.swing.GroupLayout(addpnl);
         addpnl.setLayout(addpnlLayout);
         addpnlLayout.setHorizontalGroup(
             addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addpnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(24, Short.MAX_VALUE)
                 .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(AddUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -221,7 +280,7 @@ public class mgusers extends javax.swing.JFrame {
                         .addComponent(clrbtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(addbtn)))
-                .addGap(30, 30, 30))
+                .addGap(21, 21, 21))
             .addGroup(addpnlLayout.createSequentialGroup()
                 .addGap(167, 167, 167)
                 .addComponent(jLabel1)
@@ -259,56 +318,95 @@ public class mgusers extends javax.swing.JFrame {
 
         jPanel2.add(addpnl, "card1");
 
+        editpnl.setBackground(new java.awt.Color(14, 14, 14));
+
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Edit User");
 
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Search Username:");
 
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+        EdtUsnTF.setBackground(new java.awt.Color(51, 51, 51));
+        EdtUsnTF.setForeground(new java.awt.Color(255, 255, 255));
+        EdtUsnTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
+                EdtUsnTFActionPerformed(evt);
             }
         });
 
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Edit Username:");
 
-        jTextField9.addActionListener(new java.awt.event.ActionListener() {
+        EdtNewUsnTF.setBackground(new java.awt.Color(51, 51, 51));
+        EdtNewUsnTF.setForeground(new java.awt.Color(255, 255, 255));
+        EdtNewUsnTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField9ActionPerformed(evt);
+                EdtNewUsnTFActionPerformed(evt);
             }
         });
 
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Balance:");
 
-        jTextField10.addActionListener(new java.awt.event.ActionListener() {
+        EdtBlncTF.setBackground(new java.awt.Color(51, 51, 51));
+        EdtBlncTF.setForeground(new java.awt.Color(255, 255, 255));
+        EdtBlncTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField10ActionPerformed(evt);
+                EdtBlncTFActionPerformed(evt);
             }
         });
 
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("VIP Status:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Bronze", "Silver", "Gold" }));
+        EdtCb.setForeground(new java.awt.Color(255, 255, 255));
+        EdtCb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Regular", "Bronze", "Silver", "Gold" }));
+        EdtCb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtCbActionPerformed(evt);
+            }
+        });
 
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("New Password:");
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        EdtPssTF.setBackground(new java.awt.Color(51, 51, 51));
+        EdtPssTF.setForeground(new java.awt.Color(255, 255, 255));
+        EdtPssTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                EdtPssTFActionPerformed(evt);
             }
         });
 
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        NewLogDtTF.setBackground(new java.awt.Color(51, 51, 51));
+        NewLogDtTF.setForeground(new java.awt.Color(255, 255, 255));
+        NewLogDtTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                NewLogDtTFActionPerformed(evt);
             }
         });
 
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("New Login Date:");
 
-        jButton5.setText("Clear");
+        EdtClrBttn.setBackground(new java.awt.Color(255, 0, 0));
+        EdtClrBttn.setForeground(new java.awt.Color(255, 255, 255));
+        EdtClrBttn.setText("Clear");
+        EdtClrBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtClrBttnActionPerformed(evt);
+            }
+        });
 
-        jButton6.setText("Save ");
+        SveBttn.setBackground(new java.awt.Color(56, 182, 255));
+        SveBttn.setForeground(new java.awt.Color(255, 255, 255));
+        SveBttn.setText("Save ");
+        SveBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SveBttnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout editpnlLayout = new javax.swing.GroupLayout(editpnl);
         editpnl.setLayout(editpnlLayout);
@@ -317,36 +415,36 @@ public class mgusers extends javax.swing.JFrame {
             .addGroup(editpnlLayout.createSequentialGroup()
                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(editpnlLayout.createSequentialGroup()
-                        .addGap(40, 40, 40)
+                        .addGap(35, 35, 35)
                         .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(editpnlLayout.createSequentialGroup()
                                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel8)
-                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(EdtUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(EdtNewUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(23, 23, 23)
                                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel16)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                                    .addComponent(jTextField5)
+                                    .addComponent(EdtPssTF, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                                    .addComponent(NewLogDtTF)
                                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(editpnlLayout.createSequentialGroup()
                                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addGroup(editpnlLayout.createSequentialGroup()
                                         .addComponent(jLabel11)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(EdtCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(EdtBlncTF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(32, 32, 32)
-                                .addComponent(jButton5)
+                                .addComponent(EdtClrBttn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton6))))
+                                .addComponent(SveBttn))))
                     .addGroup(editpnlLayout.createSequentialGroup()
                         .addGap(173, 173, 173)
                         .addComponent(jLabel7)))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         editpnlLayout.setVerticalGroup(
             editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -359,45 +457,61 @@ public class mgusers extends javax.swing.JFrame {
                     .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(EdtUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(EdtPssTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(jLabel17))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(EdtNewUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NewLogDtTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(editpnlLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(EdtBlncTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                         .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(EdtCb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel11))
                         .addContainerGap(82, Short.MAX_VALUE))
                     .addGroup(editpnlLayout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addGroup(editpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton5)
-                            .addComponent(jButton6))
+                            .addComponent(EdtClrBttn)
+                            .addComponent(SveBttn))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jPanel2.add(editpnl, "card2");
         editpnl.getAccessibleContext().setAccessibleDescription("");
 
+        deletepnl.setBackground(new java.awt.Color(14, 14, 14));
+
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("Delete User");
 
+        DltTF.setBackground(new java.awt.Color(51, 51, 51));
+        DltTF.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("Username:");
 
+        DltClrBttn.setBackground(new java.awt.Color(255, 0, 0));
+        DltClrBttn.setForeground(new java.awt.Color(255, 255, 255));
         DltClrBttn.setText("Clear");
+        DltClrBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DltClrBttnActionPerformed(evt);
+            }
+        });
 
+        UserDltBttn.setBackground(new java.awt.Color(153, 0, 0));
+        UserDltBttn.setForeground(new java.awt.Color(255, 255, 255));
         UserDltBttn.setText("Delete");
         UserDltBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -410,22 +524,20 @@ public class mgusers extends javax.swing.JFrame {
         deletepnlLayout.setHorizontalGroup(
             deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, deletepnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(158, Short.MAX_VALUE)
                 .addComponent(jLabel12)
                 .addGap(163, 163, 163))
             .addGroup(deletepnlLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(DltTF, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(deletepnlLayout.createSequentialGroup()
-                .addGap(94, 94, 94)
                 .addGroup(deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
-                    .addGroup(deletepnlLayout.createSequentialGroup()
-                        .addComponent(DltClrBttn)
-                        .addGap(90, 90, 90)
-                        .addComponent(UserDltBttn)))
-                .addContainerGap(86, Short.MAX_VALUE))
+                    .addGroup(deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(deletepnlLayout.createSequentialGroup()
+                            .addComponent(DltClrBttn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(UserDltBttn))
+                        .addComponent(DltTF, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         deletepnlLayout.setVerticalGroup(
             deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -445,17 +557,25 @@ public class mgusers extends javax.swing.JFrame {
 
         jPanel2.add(deletepnl, "card4");
 
+        searchpnl.setBackground(new java.awt.Color(14, 14, 14));
+
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("Search User");
 
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Username:");
 
+        SrchTF.setBackground(new java.awt.Color(51, 51, 51));
+        SrchTF.setForeground(new java.awt.Color(255, 255, 255));
         SrchTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SrchTFActionPerformed(evt);
             }
         });
 
+        SrchClrBttn.setBackground(new java.awt.Color(255, 0, 0));
+        SrchClrBttn.setForeground(new java.awt.Color(255, 255, 255));
         SrchClrBttn.setText("Clear");
         SrchClrBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -463,6 +583,8 @@ public class mgusers extends javax.swing.JFrame {
             }
         });
 
+        SrchUserBttn.setBackground(new java.awt.Color(56, 182, 255));
+        SrchUserBttn.setForeground(new java.awt.Color(255, 255, 255));
         SrchUserBttn.setText("Search");
         SrchUserBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -475,21 +597,20 @@ public class mgusers extends javax.swing.JFrame {
         searchpnlLayout.setHorizontalGroup(
             searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchpnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(148, Short.MAX_VALUE)
                 .addComponent(jLabel14)
                 .addGap(171, 171, 171))
             .addGroup(searchpnlLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(SrchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(searchpnlLayout.createSequentialGroup()
+                            .addComponent(SrchClrBttn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(SrchUserBttn))
+                        .addComponent(SrchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(searchpnlLayout.createSequentialGroup()
-                .addGap(87, 87, 87)
-                .addComponent(SrchClrBttn)
-                .addGap(86, 86, 86)
-                .addComponent(SrchUserBttn)
-                .addContainerGap(97, Short.MAX_VALUE))
         );
         searchpnlLayout.setVerticalGroup(
             searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -536,17 +657,17 @@ public class mgusers extends javax.swing.JFrame {
         cl.show(jPanel2, "card1");
     }//GEN-LAST:event_AddBttnActionPerformed
 
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+    private void EdtUsnTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtUsnTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField7ActionPerformed
+    }//GEN-LAST:event_EdtUsnTFActionPerformed
 
-    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
+    private void EdtNewUsnTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtNewUsnTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField9ActionPerformed
+    }//GEN-LAST:event_EdtNewUsnTFActionPerformed
 
-    private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
+    private void EdtBlncTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtBlncTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField10ActionPerformed
+    }//GEN-LAST:event_EdtBlncTFActionPerformed
 
     private void AddUsnTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddUsnTFActionPerformed
         // TODO add your handling code here:
@@ -567,50 +688,51 @@ public class mgusers extends javax.swing.JFrame {
         cl.show(jPanel2, "card3");
     }//GEN-LAST:event_SrchBttnActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void EdtPssTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtPssTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_EdtPssTFActionPerformed
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+    private void NewLogDtTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewLogDtTFActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+    }//GEN-LAST:event_NewLogDtTFActionPerformed
 
     private void SrchTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SrchTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_SrchTFActionPerformed
 
     private void SrchUserBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SrchUserBttnActionPerformed
-       try {
-    filecheck(); // Load or prepare your JSON file
+        try {
+            filecheck(); // Load or prepare your JSON file
 
-    String usernameToSearch = SrchTF.getText().trim(); // Get username from text field
-    boolean found = false;
+            String usernameToSearch = SrchTF.getText().trim(); // Get username from text field
+            boolean found = false;
 
-    for (int i = 0; i < users.size(); i++) {
-        JSONObject user = (JSONObject) users.get(i);
-        if (user.get("username").equals(usernameToSearch)) {
-            found = true;
+            for (int i = 0; i < users.size(); i++) {
+                JSONObject user = (JSONObject) users.get(i);
+                if (user.get("username").equals(usernameToSearch)) {
+                    found = true;
 
-            // Display user details
-            String userInfo = "Username: " + user.get("username") +
-                              "\nPassword: " + user.get("password") +
-                              "\nBalance: " + user.get("balance") +
-                              "\nLogin Date: " + user.get("logindate") +
-                              "\nVIP Status: " + user.get("vip");
-            JOptionPane.showMessageDialog(null, userInfo);
-            break;
+                    // Display user details
+                    String userInfo = "Username: " + user.get("username")
+                            + "\nPassword: " + user.get("password")
+                            + "\nBalance: " + user.get("amount")
+                            + "\nUsertime: " + user.get("userTime")
+                            + "\nLogins: " + user.get("logins")
+                            + "\nVIP Status: " + user.get("VipStatus");
+                    JOptionPane.showMessageDialog(null, userInfo);
+                    break;
+                }
+            }
+
+            if (!found) {
+                JOptionPane.showMessageDialog(null, "User not found.");
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    if (!found) {
-        JOptionPane.showMessageDialog(null, "User not found.");
-    }
-
-} catch (IOException ex) {
-    Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-} catch (ParseException ex) {
-    Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-}
 
     }//GEN-LAST:event_SrchUserBttnActionPerformed
 
@@ -619,7 +741,8 @@ public class mgusers extends javax.swing.JFrame {
     }//GEN-LAST:event_backbtn1ActionPerformed
 
     private void SrchClrBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SrchClrBttnActionPerformed
-        // TODO add your handling code here:
+        SrchTF.setText("");
+
     }//GEN-LAST:event_SrchClrBttnActionPerformed
 
     private void UserDltBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserDltBttnActionPerformed
@@ -654,6 +777,124 @@ public class mgusers extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_UserDltBttnActionPerformed
+
+    private void SveBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SveBttnActionPerformed
+        try {
+            filecheck();
+
+            String usernameToSearch = EdtUsnTF.getText().trim();
+            String newUsername = EdtNewUsnTF.getText().trim();
+            String newPassword = EdtPssTF.getText().trim();
+            String newBalanceStr = EdtBlncTF.getText().trim();
+            double newBalance = Double.parseDouble(newBalanceStr);
+            String newLoginDate = NewLogDtTF.getText().trim();
+            String newVip = EdtCb.getSelectedItem().toString();
+
+            int timeInMinutes = (int) ((newBalance / 20) * 60);
+            String formattedTime = formatTime(timeInMinutes);
+
+            boolean found = false;
+            for (int i = 0; i < users.size(); i++) {
+                JSONObject user = (JSONObject) users.get(i);
+                if (user.get("username").equals(usernameToSearch)) {
+                    user.put("username", newUsername);
+                    user.put("password", newPassword);
+                    user.put("amount", newBalanceStr);
+                    user.put("lastLogin", newLoginDate);
+                    user.put("VipStatus", newVip);
+                    user.put("userTime", formattedTime);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                record.put("users", users);
+                save();
+                JOptionPane.showMessageDialog(null, "User updated successfully!");
+            } else {
+                JOptionPane.showMessageDialog(null, "User not found.");
+            }
+
+        } catch (IOException | ParseException | NumberFormatException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Error updating user. Please check input values.");
+        }
+    }//GEN-LAST:event_SveBttnActionPerformed
+
+    private void EdtClrBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtClrBttnActionPerformed
+        EdtUsnTF.setText("");
+        EdtNewUsnTF.setText("");
+        EdtPssTF.setText("");
+        EdtBlncTF.setText("");
+        NewLogDtTF.setText("");
+    }//GEN-LAST:event_EdtClrBttnActionPerformed
+
+    private void EdtCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EdtCbActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EdtCbActionPerformed
+
+    private String formatTime(int totalMinutes) {
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+        return String.format("%02d:%02d:00", hours, minutes);
+    }
+
+    private void addbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addbtnActionPerformed
+        try {
+            filecheck();
+
+            String username = AddUsnTF.getText().trim();
+            String password = AddPssTF.getText().trim();
+            String balanceStr = AddBlncTF.getText().trim();
+            double balance = Double.parseDouble(balanceStr);
+            String loginDate = AddLoginDteTF.getText().trim();
+            String vipStatus = vipcmb.getSelectedItem().toString();
+
+            // Check if user already exists
+            for (Object obj : users) {
+                JSONObject user = (JSONObject) obj;
+                if (user.get("username").equals(username)) {
+                    JOptionPane.showMessageDialog(null, "Username already exists!");
+                    return;
+                }
+            }
+
+            // Calculate time based on balance
+            int timeInMinutes = (int) ((balance / 20) * 60); // 1 hour per 20 balance
+            String formattedTime = formatTime(timeInMinutes);
+
+            JSONObject newUser = new JSONObject();
+            newUser.put("username", username);
+            newUser.put("password", password);
+            newUser.put("amount", balanceStr);
+            newUser.put("userTime", formattedTime);
+            newUser.put("lastLogin", loginDate);
+            newUser.put("VipStatus", vipStatus);
+
+            users.add(newUser);
+            record.put("users", users);
+            save();
+
+            JOptionPane.showMessageDialog(null, "User added successfully!");
+
+        } catch (IOException | ParseException | NumberFormatException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Error adding user. Please check input values.");
+        }
+
+    }//GEN-LAST:event_addbtnActionPerformed
+
+    private void DltClrBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DltClrBttnActionPerformed
+        DltTF.setText("");
+    }//GEN-LAST:event_DltClrBttnActionPerformed
+
+    private void clrbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clrbtnActionPerformed
+        AddUsnTF.setText("");
+        AddPssTF.setText("");
+        AddBlncTF.setText("");
+        AddLoginDteTF.setText("");
+    }//GEN-LAST:event_clrbtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -727,11 +968,19 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JButton DltBttn;
     private javax.swing.JButton DltClrBttn;
     private javax.swing.JTextField DltTF;
+    private javax.swing.JTextField EdtBlncTF;
     private javax.swing.JButton EdtBttn;
+    private javax.swing.JComboBox<String> EdtCb;
+    private javax.swing.JButton EdtClrBttn;
+    private javax.swing.JTextField EdtNewUsnTF;
+    private javax.swing.JTextField EdtPssTF;
+    private javax.swing.JTextField EdtUsnTF;
+    private javax.swing.JTextField NewLogDtTF;
     private javax.swing.JButton SrchBttn;
     private javax.swing.JButton SrchClrBttn;
     private javax.swing.JTextField SrchTF;
     private javax.swing.JButton SrchUserBttn;
+    private javax.swing.JButton SveBttn;
     private javax.swing.JButton UserDltBttn;
     private javax.swing.JButton addbtn;
     private javax.swing.JPanel addpnl;
@@ -739,9 +988,6 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JButton clrbtn;
     private javax.swing.JPanel deletepnl;
     private javax.swing.JPanel editpnl;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -751,6 +997,8 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -761,11 +1009,6 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JPanel searchpnl;
     private javax.swing.JComboBox<String> vipcmb;
     // End of variables declaration//GEN-END:variables
