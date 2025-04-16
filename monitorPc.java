@@ -301,7 +301,7 @@ private void forceLogoutUser() {
 
                 // Set active to false and reset remaining time
                 user.put("active", false);
-                user.put("userTime", "0:00"); // Optional: Reset time
+                user.put("remainingTime", "0:00"); // Optional: Reset time
                 break;
             }
         }
