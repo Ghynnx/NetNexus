@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimerTask;
 import javax.swing.JOptionPane;
 import java.util.Timer;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -219,77 +224,84 @@ public class monitorPc extends javax.swing.JFrame {
 
     // Start a timer to periodically check and log out users with remainingTime = 0
     private void startAutoLogoutTimer() {
-        if (autoLogoutTimer != null) {
-            autoLogoutTimer.cancel(); // Cancel any existing timer
-        }
-
-        autoLogoutTimer = new Timer(true); // Run as a daemon thread
-        autoLogoutTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    checkAndLogoutUsers();
-                } catch (Exception e) {
-                    System.err.println("Error in TimerTask: " + e.getMessage());
-                }
-            }
-        }, 0, 1000); // Check every second
+    if (autoLogoutTimer != null) {
+        autoLogoutTimer.cancel(); // Cancel any existing timer
     }
+
+    autoLogoutTimer = new Timer(true); // Run as a daemon thread
+    autoLogoutTimer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+            try {
+                checkAndLogoutUsers();
+                removeInactiveUsers(); // Check and remove inactive users
+            } catch (Exception e) {
+                System.err.println("Error in TimerTask: " + e.getMessage());
+            }
+        }
+    }, 0, 1000); // Check every second
+}
 
     // Method to check remaining time and log out users
     private void checkAndLogoutUsers() {
-        try {
-            File file = new File(filepath);
-            if (!file.exists()) {
-                return; // Exit if file doesn't exist
-            }
-
-            // Parse JSON file
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
-            JSONArray users = (JSONArray) jsonObject.get("users");
-            boolean dataUpdated = false;
-
-            for (Object obj : users) {
-                JSONObject user = (JSONObject) obj;
-                Boolean isActive = (Boolean) user.get("active");
-
-                if (isActive != null && isActive) {
-                    String startTimeStr = (String) user.get("startTime"); // Assuming startTime is stored as HH:MM:SS
-                    String allocatedDurationStr = (String) user.get("allocatedDuration"); // Assuming duration is HH:MM:SS
-
-                    // Convert times to seconds
-                    int startTime = parseTimeToSeconds(startTimeStr);
-                    int allocatedDuration = parseTimeToSeconds(allocatedDurationStr);
-                    int currentTime = (int) (System.currentTimeMillis() / 1000);
-
-                    // Calculate elapsed time and remaining time
-                    int elapsedTime = currentTime - startTime;
-                    int remainingTime = allocatedDuration - elapsedTime;
-
-                    if (remainingTime > 0) {
-                        user.put("remainingTime", formatSecondsToTime(remainingTime));
-                        dataUpdated = true;
-                    } else {
-                        user.put("active", false); // Log out the user
-                        user.put("remainingTime", "00:00:00");
-                        dataUpdated = true;
-
-                        System.out.println("User " + user.get("username") + " logged out automatically.");
-                    }
-                }
-            }
-
-            if (dataUpdated) {
-                try (FileWriter writer = new FileWriter(file)) {
-                    writer.write(jsonObject.toJSONString());
-                }
-                loadUserData(); // Refresh table
-            }
-        } catch (IOException | ParseException e) {
-            System.err.println("Error checking user time: " + e.getMessage());
+    try {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            return; // Exit if file doesn't exist
         }
+
+        // Parse JSON file
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+        JSONArray sessions = (JSONArray) jsonObject.get("sessions");
+        boolean dataUpdated = false;
+
+        for (Object obj : sessions) {
+            JSONObject session = (JSONObject) obj;
+            Boolean isActive = (Boolean) session.get("active");
+
+            if (isActive != null && isActive) {
+                String startTimeStr = (String) session.get("startTime"); // Assuming startTime is stored as HH:MM:SS
+                String userTimeStr = (String) session.get("userTime"); // Assuming userTime is stored as HH:MM:SS
+
+                // Handle null values for startTime or userTime
+                if (startTimeStr == null || userTimeStr == null) {
+                    System.err.println("Missing startTime or userTime for session on PC: " + session.get("pcNo"));
+                    continue; // Skip this session
+                }
+
+                // Convert times to seconds
+                int startTime = parseTimeToSeconds(startTimeStr);
+                int userTime = parseTimeToSeconds(userTimeStr);
+                int currentTime = (int) (System.currentTimeMillis() / 1000);
+
+                // Calculate elapsed time and remaining time
+                int elapsedTime = currentTime - startTime;
+                int remainingTime = userTime - elapsedTime;
+
+                if (remainingTime > 0) {
+                    session.put("remainingTime", formatSecondsToTime(remainingTime));
+                    dataUpdated = true;
+                } else {
+                    session.put("active", false); // Log out the session
+                    session.put("remainingTime", "00:00:00");
+                    dataUpdated = true;
+
+                    System.out.println("Session on PC " + session.get("pcNo") + " logged out automatically.");
+                }
+            }
+        }
+
+        if (dataUpdated) {
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(jsonObject.toJSONString());
+            }
+            loadUserData(); // Refresh table
+        }
+    } catch (IOException | ParseException e) {
+        System.err.println("Error checking session time: " + e.getMessage());
     }
+}
 
     // Utility to parse time string (HH:MM:SS) to seconds
     private int parseTimeToSeconds(String time) {
@@ -369,46 +381,58 @@ public class monitorPc extends javax.swing.JFrame {
     }
 
     private void loadUserData() {
-        try {
-            File file = new File(filepath);
-            if (!file.exists()) {
-                JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
-                return;
+    try {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(this, "JSON file not found at: " + filepath);
+            return;
+        }
+
+        // Parse JSON file
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+        JSONArray sessions = (JSONArray) jsonObject.get("sessions");
+        JSONArray users = (JSONArray) jsonObject.get("users");
+
+        // Clear existing rows in the table
+        DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
+        tableModel.setRowCount(0);
+
+        // Populate table with active sessions
+        for (Object obj : sessions) {
+            JSONObject session = (JSONObject) obj;
+            Boolean isActive = (Boolean) session.get("active");
+
+            if (isActive != null && isActive) {
+                String pcNo = "PC-" + session.get("pcNo");
+                String username = (String) session.get("username");
+                String remainingTime = (String) session.get("remainingTime");
+
+                // Find corresponding user details
+                JSONObject user = findUserByUsername(users, username);
+                String balance = user != null ? String.valueOf(user.get("amount")) : "N/A";
+                int logins = user != null ? ((Long) user.get("logins")).intValue() : 0;
+                String rank = determineRank(logins);
+
+                // Add row to the table
+                tableModel.addRow(new Object[]{pcNo, username, remainingTime, balance, logins, rank});
             }
+        }
+    } catch (HeadlessException | IOException | ParseException e) {
+        JOptionPane.showMessageDialog(this, "Error loading user data: " + e.getMessage());
+    }
+}
 
-            // Parse JSON file
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
-            JSONArray users = (JSONArray) jsonObject.get("users");
-
-            // Clear existing rows in the table
-            DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
-            tableModel.setRowCount(0);
-
-            // Populate table with only active users
-            for (Object obj : users) {
-                JSONObject user = (JSONObject) obj;
-                Boolean isActive = (Boolean) user.get("active");
-
-                if (isActive != null && isActive) {
-                    String pcNo = "PC-" + user.get("pcNo");
-                    String username = (String) user.get("username");
-                    String remainingTime = (String) user.get("remainingTime");
-                    String balance = user.containsKey("amount") ? String.valueOf(user.get("amount")) : "N/A";
-
-                    Long loginsLong = (Long) user.get("logins");
-                    int logins = (loginsLong != null) ? loginsLong.intValue() : 0;
-
-                    String rank = determineRank(logins);
-
-                    // Add row to the table
-                    tableModel.addRow(new Object[]{pcNo, username, remainingTime, balance, logins, rank});
-                }
-            }
-        } catch (HeadlessException | IOException | ParseException e) {
-            JOptionPane.showMessageDialog(this, "Error loading user data: " + e.getMessage());
+// Helper method to find user details by username
+private JSONObject findUserByUsername(JSONArray users, String username) {
+    for (Object obj : users) {
+        JSONObject user = (JSONObject) obj;
+        if (username.equals(user.get("username"))) {
+            return user;
         }
     }
+    return null;
+}
 
     // Helper method to determine rank based on logins
     private String determineRank(int logins) {
@@ -423,6 +447,58 @@ public class monitorPc extends javax.swing.JFrame {
         }
     }
 
+    private void removeInactiveUsers() {
+    try {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            return; // Exit if file doesn't exist
+        }
+
+        // Parse JSON file
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
+        JSONArray users = (JSONArray) jsonObject.get("users");
+
+        long currentTime = System.currentTimeMillis();
+        long thirtyDaysInMillis = 30L * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+
+        // Remove users inactive for more than 30 days
+        users.removeIf((Object obj) -> {
+            JSONObject user = (JSONObject) obj;
+            String lastActivityStr = (String) user.get("lastActivity");
+            if (lastActivityStr == null) {
+                return false; // Skip if the lastActivity field is missing
+            }
+            
+            try {
+                long lastActivity = 0;
+                try {
+                    lastActivity = parseDateToMillis(lastActivityStr);
+                } catch (java.text.ParseException ex) {
+                    Logger.getLogger(monitorPc.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return (currentTime - lastActivity) > thirtyDaysInMillis;
+            } catch (ParseException e) {
+                System.err.println("Error parsing lastActivity for user: " + user.get("username"));
+                return false;
+            }
+        });
+
+        // Write updated JSON back to file
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(jsonObject.toJSONString());
+        }
+
+        System.out.println("Inactive users removed successfully.");
+    } catch (IOException | ParseException e) {
+        System.err.println("Error removing inactive users: " + e.getMessage());
+    }
+}
+    private long parseDateToMillis(String dateStr) throws ParseException, java.text.ParseException {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    Date date = dateFormat.parse(dateStr);
+    return date.getTime();
+}
     // Variables declaration - do not modify                     
     private javax.swing.JButton backBtn2;
     private javax.swing.JPanel jPanel1;
