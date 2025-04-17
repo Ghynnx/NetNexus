@@ -460,10 +460,6 @@ public class Members extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Something went wrong: " + e.getMessage());
         }
-
-        this.dispose();
-        Dashboard x = new Dashboard();
-        x.setVisible(true);
     }//GEN-LAST:event_TopUpActionPerformed
 
     private void ClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearActionPerformed

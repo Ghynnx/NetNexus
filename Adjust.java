@@ -3,15 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
-
+import java.io.FileReader;
+import java.io.FileWriter;
+import javax.swing.JOptionPane;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Adjust extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ADJUST
-     */
+    private static final String FILEPATH = "src\\netnexus.json";
+
     public Adjust() {
         initComponents();
+        UsnTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                UsnTFActionPerformed(null); // Reuse the same logic
+            }
+        });
     }
 
     /**
@@ -157,13 +166,67 @@ public class Adjust extends javax.swing.JFrame {
 
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
-        Billing v = new Billing();
-        v.setVisible(true);
-        dispose();
+
     }//GEN-LAST:event_backBtnActionPerformed
 
     private void AdjBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdjBttnActionPerformed
+        String username = UsnTF.getText().trim();
+        String newTime = TimeTF.getText().trim();
 
+        if (username.isEmpty() || newTime.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields.");
+            return;
+        }
+
+        try {
+            FileReader reader = new FileReader(FILEPATH);
+            StringBuilder sb = new StringBuilder();
+            int ch;
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+
+            JSONObject json = new JSONObject(sb.toString());
+            JSONArray users = json.getJSONArray("users");
+
+            boolean found = false;
+            for (int i = 0; i < users.length(); i++) {
+                JSONObject user = users.getJSONObject(i);
+                if (user.getString("username").equalsIgnoreCase(username)) {
+                    found = true;
+                    user.put("userTime", newTime);
+
+                    FileWriter writer = new FileWriter(FILEPATH);
+                    writer.write(json.toString(4));
+                    writer.close();
+
+                    JOptionPane.showMessageDialog(this, "Time adjusted successfully.");
+                    break;
+                }
+            }
+
+            if (!found) {
+                JOptionPane.showMessageDialog(this, "User not found.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }
+
+    private int parseTimeToMinutes(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
+    private String formatMinutesToTime(int minutes) {
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return String.format("%d:%02d", hrs, mins);
     }//GEN-LAST:event_AdjBttnActionPerformed
 
     private void ClrBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClrBttnActionPerformed
@@ -172,7 +235,44 @@ public class Adjust extends javax.swing.JFrame {
     }//GEN-LAST:event_ClrBttnActionPerformed
 
     private void UsnTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsnTFActionPerformed
+        String username = UsnTF.getText().trim();
 
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a username.");
+            return;
+        }
+
+        try {
+            FileReader reader = new FileReader(FILEPATH);
+            StringBuilder sb = new StringBuilder();
+            int ch;
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+
+            JSONObject json = new JSONObject(sb.toString());
+            JSONArray users = json.getJSONArray("users");
+
+            boolean found = false;
+            for (int i = 0; i < users.length(); i++) {
+                JSONObject user = users.getJSONObject(i);
+                if (user.getString("username").equalsIgnoreCase(username)) {
+                    String time = user.optString("userTime", "00:00");
+                    TimeTF.setText(time);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                JOptionPane.showMessageDialog(this, "User not found.");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error loading user: " + e.getMessage());
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_UsnTFActionPerformed
 
     private void TimeTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TimeTFActionPerformed
@@ -214,6 +314,7 @@ public class Adjust extends javax.swing.JFrame {
             }
         });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AdjBttn;

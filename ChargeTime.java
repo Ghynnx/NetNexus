@@ -3,14 +3,35 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.PlainDocument;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class ChargeTime extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ChargeTime
-     */
+    private static final String FILEPATH = "src\\netnexus.json";
+
     public ChargeTime() {
         initComponents();
+        ((PlainDocument) TimeTF.getDocument()).addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                updateCostField();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                updateCostField();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                updateCostField();
+            }
+        });
     }
 
     /**
@@ -192,9 +213,7 @@ public class ChargeTime extends javax.swing.JFrame {
     }//GEN-LAST:event_CostTFActionPerformed
 
     private void backBtn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtn5ActionPerformed
-        Billing v = new Billing();
-        v.setVisible(true);
-        dispose();
+
     }//GEN-LAST:event_backBtn5ActionPerformed
 
     private void UsnTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsnTFActionPerformed
@@ -202,7 +221,87 @@ public class ChargeTime extends javax.swing.JFrame {
     }//GEN-LAST:event_UsnTFActionPerformed
 
     private void ChrgBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChrgBttnActionPerformed
+        String username = UsnTF.getText().trim();
+        String timeInput = TimeTF.getText().trim();
 
+        if (username.isEmpty() || timeInput.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields.");
+            return;
+        }
+
+        try {
+            FileReader reader = new FileReader(FILEPATH);
+            StringBuilder sb = new StringBuilder();
+            int ch;
+            while ((ch = reader.read()) != -1) {
+                sb.append((char) ch);
+            }
+            reader.close();
+
+            JSONObject json = new JSONObject(sb.toString());
+            JSONArray users = json.getJSONArray("users");
+
+            int addedMinutes = parseTimeToMinutes(timeInput);
+
+            boolean userFound = false;
+            for (int i = 0; i < users.length(); i++) {
+                JSONObject user = users.getJSONObject(i);
+                if (user.getString("username").equalsIgnoreCase(username)) {
+                    userFound = true;
+
+                    String currentTime = user.optString("userTime", "0:00");
+                    int totalMinutes = parseTimeToMinutes(currentTime) + addedMinutes;
+                    String newTime = formatMinutesToTime(totalMinutes);
+
+                    user.put("userTime", newTime);
+
+                    FileWriter writer = new FileWriter(FILEPATH);
+                    writer.write(json.toString(4));
+                    writer.close();
+
+                    TimeTF.setText(newTime);
+                    CostTF.setText(String.format("₱%.2f", addedMinutes * 0.33));
+                    JOptionPane.showMessageDialog(this, "Time charged successfully.");
+                    break;
+                }
+            }
+
+            if (!userFound) {
+                JOptionPane.showMessageDialog(this, "User not found.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }
+
+    private void updateCostField() {
+         String timeInput = TimeTF.getText().trim();
+    if (timeInput.matches("\\d{1,2}:\\d{1,2}")) {
+        try {
+            int totalMinutes = parseTimeToMinutes(timeInput);
+            double cost = totalMinutes * 0.30;
+            CostTF.setText(String.format("₱%.2f", cost));
+        } catch (Exception e) {
+            CostTF.setText("₱0.00");
+        }
+    } else {
+        CostTF.setText("₱0.00");
+    }
+}
+
+    private int parseTimeToMinutes(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
+    private String formatMinutesToTime(int minutes) {
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return String.format("%02d:%02d", hrs, mins);
     }//GEN-LAST:event_ChrgBttnActionPerformed
 
     private void ClrBttnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClrBttnActionPerformed
@@ -215,36 +314,37 @@ public class ChargeTime extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ChargeTime().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(ChargeTime.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new ChargeTime().setVisible(true);
+        }
+    });
+}
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ChrgBttn;
