@@ -463,23 +463,25 @@ private JSONObject findUserByUsername(JSONArray users, String username) {
         long thirtyDaysInMillis = 30L * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
         // Remove users inactive for more than 30 days
-        users.removeIf((Object obj) -> {
-            JSONObject user = (JSONObject) obj;
-            String lastActivityStr = (String) user.get("lastActivity");
-            if (lastActivityStr == null) {
-                return false; // Skip if the lastActivity field is missing
-            }
-            
-            try {
-                long lastActivity = 0;
+        users.removeIf(new Predicate() {
+            @Override
+            public boolean test(Object obj) {
+                JSONObject user = (JSONObject) obj;
+                String lastActivityStr = (String) user.get("lastActivity");
+                if (lastActivityStr == null) {
+                    System.err.println("Skipping user with missing lastActivity field: " + user.get("username"));
+                    return false; // Skip if the lastActivity field is missing
+                }
+                
                 try {
-                    lastActivity = parseDateToMillis(lastActivityStr);
-                } catch (java.text.ParseException ex) {
+                    long lastActivity = parseDateToMillis(lastActivityStr);
+                    return (currentTime - lastActivity) > thirtyDaysInMillis;
+                } catch (java.text.ParseException e) {
+                    System.err.println("Error parsing lastActivity for user: " + user.get("username"));
+                    return false; // Skip if parsing fails
+                } catch (ParseException ex) {
                     Logger.getLogger(monitorPc.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                return (currentTime - lastActivity) > thirtyDaysInMillis;
-            } catch (ParseException e) {
-                System.err.println("Error parsing lastActivity for user: " + user.get("username"));
                 return false;
             }
         });
