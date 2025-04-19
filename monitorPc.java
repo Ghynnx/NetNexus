@@ -16,7 +16,7 @@ import org.json.simple.parser.ParseException;
 
 public class monitorPc extends javax.swing.JFrame {
 
-    private static final String filepath = "C:\\Users\\User\\Documents\\NetBeansProjects\\NetNexus\\src\\netnexus.json";
+    private static final String filepath = "src\\netnexus.json"; // Path to JSON file
     private Timer autoLogoutTimer;
 
     public monitorPc() {
@@ -25,6 +25,7 @@ public class monitorPc extends javax.swing.JFrame {
         startAutoLogoutTimer();
     }
 
+    @SuppressWarnings("unchecked")
     private void initComponents() {
         // GUI code remains unchanged
     }
@@ -59,13 +60,13 @@ public class monitorPc extends javax.swing.JFrame {
             @Override
             public void run() {
                 try {
-                    checkAndLogoutUsers();
-                    removeInactiveUsers();
+                    checkAndLogoutUsers(); // Check remaining time and log out users if needed
+                    removeInactiveUsers(); // Remove inactive users
                 } catch (Exception e) {
                     System.err.println("Error in TimerTask: " + e.getMessage());
                 }
             }
-        }, 0, 1000); // Schedule task every second
+        }, 0, 1000); // Schedule the task every second
     }
 
     private void checkAndLogoutUsers() {
@@ -144,22 +145,23 @@ public class monitorPc extends javax.swing.JFrame {
 
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(file));
-            JSONArray users = (JSONArray) jsonObject.get("users");
+            JSONArray sessions = (JSONArray) jsonObject.get("sessions");
 
-            boolean userFound = false;
+            boolean sessionFound = false;
 
-            for (Object obj : users) {
-                JSONObject user = (JSONObject) obj;
-                if (username.equalsIgnoreCase((String) user.get("username"))) {
-                    userFound = true;
-                    user.put("active", false);
-                    user.put("remainingTime", formatSecondsToTime(0));
+            // Find and force logout the user
+            for (Object obj : sessions) {
+                JSONObject session = (JSONObject) obj;
+                if (username.equalsIgnoreCase((String) session.get("username"))) {
+                    sessionFound = true;
+                    session.put("active", false);
+                    session.put("remainingTime", formatSecondsToTime(0));
                     break;
                 }
             }
 
-            if (!userFound) {
-                JOptionPane.showMessageDialog(this, "User not found.");
+            if (!sessionFound) {
+                JOptionPane.showMessageDialog(this, "User session not found.");
                 return;
             }
 
@@ -168,7 +170,6 @@ public class monitorPc extends javax.swing.JFrame {
             }
 
             loadUserData();
-
             JOptionPane.showMessageDialog(this, "User " + username + " has been logged out.");
         } catch (HeadlessException | IOException | ParseException e) {
             JOptionPane.showMessageDialog(this, "Error during force logout: " + e.getMessage());
