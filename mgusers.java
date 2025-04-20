@@ -12,6 +12,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.awt.CardLayout;
+import java.awt.HeadlessException;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -31,7 +35,61 @@ public class mgusers extends javax.swing.JFrame {
     public mgusers() {
         initComponents();
 
+        setupRowSelectionListener();
+        try {
+            filecheck(); // Load data from JSON file
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    private TableRowSorter<DefaultTableModel> rowSorter;
+
+    private void setupTableFilter() {
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    if (rowSorter == null) {
+        rowSorter = new TableRowSorter<>(model);
+        jTable1.setRowSorter(rowSorter);
+    }
+
+    srchTF.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        @Override
+        public void insertUpdate(javax.swing.event.DocumentEvent e) {
+            filterTable();
+        }
+
+        @Override
+        public void removeUpdate(javax.swing.event.DocumentEvent e) {
+            filterTable();
+        }
+
+        @Override
+        public void changedUpdate(javax.swing.event.DocumentEvent e) {
+            filterTable();
+        }
+    });
+}
+                  
+                
+            private void filterTable() {
+    String searchText = srchTF.getText().trim().toLowerCase();
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+    jTable1.setRowSorter(sorter);
+
+    if (searchText.isEmpty()) {
+        sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+                String username = (String) entry.getValue(0);
+                return !"admin".equalsIgnoreCase(username); // Exclude admin
+            }
+        });
+    } else {
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
+    }
+}
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -45,27 +103,14 @@ public class mgusers extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         AddBttn = new javax.swing.JButton();
         EdtBttn = new javax.swing.JButton();
-        SrchBttn = new javax.swing.JButton();
         DltBttn = new javax.swing.JButton();
         backbtn1 = new javax.swing.JButton();
+        userBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        addpnl = new javax.swing.JPanel();
-        AddUsnTF = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        AddPssTF = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        AddBlncTF = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        AddLoginDteTF = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        vipcmb = new javax.swing.JComboBox<>();
-        addbtn = new javax.swing.JButton();
-        jLabel18 = new javax.swing.JLabel();
-        addtimeTF = new javax.swing.JTextField();
-        jLabel20 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        srchTF = new javax.swing.JTextField();
         editpnl = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -85,21 +130,29 @@ public class mgusers extends javax.swing.JFrame {
         newEdittimeTF = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
-        deletepnl = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        DltTF = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        UserDltBttn = new javax.swing.JButton();
-        searchpnl = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        SrchTF = new javax.swing.JTextField();
-        SrchUserBttn = new javax.swing.JButton();
+        addpnl = new javax.swing.JPanel();
+        AddUsnTF = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        AddPssTF = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        AddBlncTF = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        AddLoginDteTF = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        vipcmb = new javax.swing.JComboBox<>();
+        addbtn = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        addtimeTF = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         AddBttn.setText("Add User");
         AddBttn.addActionListener(new java.awt.event.ActionListener() {
@@ -107,6 +160,7 @@ public class mgusers extends javax.swing.JFrame {
                 AddBttnActionPerformed(evt);
             }
         });
+        jPanel1.add(AddBttn, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 100, -1));
 
         EdtBttn.setText("Edit User");
         EdtBttn.addActionListener(new java.awt.event.ActionListener() {
@@ -114,13 +168,7 @@ public class mgusers extends javax.swing.JFrame {
                 EdtBttnActionPerformed(evt);
             }
         });
-
-        SrchBttn.setText("Search User");
-        SrchBttn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SrchBttnActionPerformed(evt);
-            }
-        });
+        jPanel1.add(EdtBttn, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 100, -1));
 
         DltBttn.setText("Delete User");
         DltBttn.addActionListener(new java.awt.event.ActionListener() {
@@ -128,6 +176,7 @@ public class mgusers extends javax.swing.JFrame {
                 DltBttnActionPerformed(evt);
             }
         });
+        jPanel1.add(DltBttn, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 320, 100, -1));
 
         backbtn1.setText("Back");
         backbtn1.addActionListener(new java.awt.event.ActionListener() {
@@ -135,44 +184,171 @@ public class mgusers extends javax.swing.JFrame {
                 backbtn1ActionPerformed(evt);
             }
         });
+        jPanel1.add(backbtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(97, 14, 57, 17));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(46, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(DltBttn)
-                            .addComponent(SrchBttn)
-                            .addComponent(EdtBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(AddBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(backbtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(backbtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
-                .addComponent(AddBttn)
-                .addGap(18, 18, 18)
-                .addComponent(EdtBttn)
-                .addGap(18, 18, 18)
-                .addComponent(SrchBttn)
-                .addGap(18, 18, 18)
-                .addComponent(DltBttn)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        userBtn.setText("Users");
+        userBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userBtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(userBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 100, -1));
 
         jPanel2.setLayout(new java.awt.CardLayout());
 
-        addpnl.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Username", "Time", "Balance", "Login Date"
+            }
+        ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, 830, 320));
+
+        srchTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                srchTFKeyReleased(evt);
+            }
+        });
+        jPanel3.add(srchTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, 350, -1));
+
+        jPanel2.add(jPanel3, "card6");
+
+        editpnl.setMinimumSize(new java.awt.Dimension(925, 500));
+        editpnl.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setText("Edit User");
+        editpnl.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 80, -1, -1));
+
+        jLabel8.setText("Search Username:");
+        editpnl.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 130, -1, 20));
+
+        EdtUsnTF.setText("Type Username");
+        EdtUsnTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EdtUsnTFMouseClicked(evt);
+            }
+        });
+        EdtUsnTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtUsnTFActionPerformed(evt);
+            }
+        });
+        editpnl.add(EdtUsnTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, 165, -1));
+
+        jLabel9.setText("Edit Username:");
+        editpnl.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 200, 95, -1));
+
+        EdtNewUsnTF.setText("Enter New Username");
+        EdtNewUsnTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EdtNewUsnTFMouseClicked(evt);
+            }
+        });
+        EdtNewUsnTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtNewUsnTFActionPerformed(evt);
+            }
+        });
+        editpnl.add(EdtNewUsnTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 220, 165, -1));
+
+        jLabel10.setText("Balance:");
+        editpnl.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, 99, -1));
+
+        EdtBlncTF.setText("0.0");
+        EdtBlncTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EdtBlncTFMouseClicked(evt);
+            }
+        });
+        EdtBlncTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtBlncTFActionPerformed(evt);
+            }
+        });
+        editpnl.add(EdtBlncTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 280, 165, -1));
+
+        jLabel11.setText("VIP Status:");
+        editpnl.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 330, -1, -1));
+
+        EdtCb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Bronze", "Silver", "Gold" }));
+        editpnl.add(EdtCb, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 330, -1, -1));
+
+        jLabel16.setText("New Password:");
+        editpnl.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 130, -1, -1));
+
+        EdtPssTF.setText("Type Password");
+        EdtPssTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                EdtPssTFMouseClicked(evt);
+            }
+        });
+        EdtPssTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EdtPssTFActionPerformed(evt);
+            }
+        });
+        editpnl.add(EdtPssTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 150, 160, -1));
+
+        NewLogDtTF.setText("mm-dd-yyyy");
+        NewLogDtTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                NewLogDtTFMouseClicked(evt);
+            }
+        });
+        NewLogDtTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NewLogDtTFActionPerformed(evt);
+            }
+        });
+        editpnl.add(NewLogDtTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 220, 160, -1));
+
+        jLabel17.setText("New Login Date:");
+        editpnl.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 200, 106, -1));
+
+        SveBttn.setText("Save ");
+        SveBttn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SveBttnActionPerformed(evt);
+            }
+        });
+        editpnl.add(SveBttn, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 390, -1, -1));
+
+        jLabel19.setText("New Time Session:");
+        editpnl.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 260, -1, -1));
+
+        newEdittimeTF.setText("00:00:00");
+        newEdittimeTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newEdittimeTFActionPerformed(evt);
+            }
+        });
+        newEdittimeTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                newEdittimeTFKeyReleased(evt);
+            }
+        });
+        editpnl.add(newEdittimeTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 280, 160, -1));
+
+        jLabel21.setText("Logins:");
+        editpnl.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 330, -1, -1));
+
+        jTextField2.setText("0");
+        editpnl.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 330, -1, -1));
+
+        jPanel2.add(editpnl, "card2");
+        editpnl.getAccessibleContext().setAccessibleDescription("");
 
         AddUsnTF.setText("Enter Username");
         AddUsnTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -185,17 +361,13 @@ public class mgusers extends javax.swing.JFrame {
                 AddUsnTFActionPerformed(evt);
             }
         });
-        addpnl.add(AddUsnTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 171, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Add User");
-        addpnl.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 20, -1, -1));
 
         jLabel2.setText("Username");
-        addpnl.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
 
         jLabel3.setText("Password:");
-        addpnl.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 70, -1, -1));
 
         AddPssTF.setText("Enter Password");
         AddPssTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -203,10 +375,8 @@ public class mgusers extends javax.swing.JFrame {
                 AddPssTFMouseClicked(evt);
             }
         });
-        addpnl.add(AddPssTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 171, -1));
 
         jLabel4.setText("Balance:");
-        addpnl.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
 
         AddBlncTF.setText("0.0");
         AddBlncTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -224,10 +394,8 @@ public class mgusers extends javax.swing.JFrame {
                 AddBlncTFKeyReleased(evt);
             }
         });
-        addpnl.add(AddBlncTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 128, -1));
 
         jLabel5.setText("Login Date:");
-        addpnl.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 130, -1, -1));
 
         AddLoginDteTF.setText("mm-dd-yyyy");
         AddLoginDteTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -235,13 +403,10 @@ public class mgusers extends javax.swing.JFrame {
                 AddLoginDteTFMouseClicked(evt);
             }
         });
-        addpnl.add(AddLoginDteTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 150, 141, -1));
 
         jLabel6.setText("VIP Status:");
-        addpnl.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 67, 24));
 
         vipcmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Bronze", "Silver", "Gold" }));
-        addpnl.add(vipcmb, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 240, 92, -1));
 
         addbtn.setText("Add");
         addbtn.addActionListener(new java.awt.event.ActionListener() {
@@ -249,10 +414,8 @@ public class mgusers extends javax.swing.JFrame {
                 addbtnActionPerformed(evt);
             }
         });
-        addpnl.add(addbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, -1, -1));
 
         jLabel18.setText("Time Session:");
-        addpnl.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 190, -1, -1));
 
         addtimeTF.setText("00:00:00");
         addtimeTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -265,264 +428,106 @@ public class mgusers extends javax.swing.JFrame {
                 addtimeTFActionPerformed(evt);
             }
         });
-        addpnl.add(addtimeTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 210, -1, -1));
 
         jLabel20.setText("Logins:");
-        addpnl.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, -1, -1));
 
         jTextField1.setText("0");
-        addpnl.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, -1, -1));
+
+        javax.swing.GroupLayout addpnlLayout = new javax.swing.GroupLayout(addpnl);
+        addpnl.setLayout(addpnlLayout);
+        addpnlLayout.setHorizontalGroup(
+            addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(addpnlLayout.createSequentialGroup()
+                .addGap(200, 200, 200)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(addpnlLayout.createSequentialGroup()
+                        .addGap(170, 170, 170)
+                        .addComponent(jLabel1))
+                    .addGroup(addpnlLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(187, 187, 187)
+                        .addComponent(jLabel3))
+                    .addComponent(jLabel4)
+                    .addGroup(addpnlLayout.createSequentialGroup()
+                        .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(AddUsnTF, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(AddBlncTF, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(addpnlLayout.createSequentialGroup()
+                                .addComponent(jLabel20)
+                                .addGap(43, 43, 43)
+                                .addComponent(jTextField1))
+                            .addGroup(addpnlLayout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(vipcmb, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(addpnlLayout.createSequentialGroup()
+                                .addGap(69, 69, 69)
+                                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(AddPssTF, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(AddLoginDteTF, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addpnlLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(addbtn)
+                                    .addComponent(jLabel18))
+                                .addGap(9, 9, 9)
+                                .addComponent(addtimeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(58, 58, 58))
+        );
+        addpnlLayout.setVerticalGroup(
+            addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(addpnlLayout.createSequentialGroup()
+                .addGap(63, 63, 63)
+                .addComponent(jLabel1)
+                .addGap(45, 45, 45)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
+                .addGap(14, 14, 14)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(AddUsnTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(AddPssTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
+                .addGap(14, 14, 14)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(AddBlncTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(AddLoginDteTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel20))
+                    .addComponent(jLabel18)
+                    .addComponent(addtimeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(addpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(vipcmb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31)
+                .addComponent(addbtn)
+                .addContainerGap(99, Short.MAX_VALUE))
+        );
 
         jPanel2.add(addpnl, "card1");
-
-        editpnl.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel7.setText("Edit User");
-        editpnl.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(173, 50, -1, -1));
-
-        jLabel8.setText("Search Username:");
-        editpnl.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 87, -1, 20));
-
-        EdtUsnTF.setText("Type Username");
-        EdtUsnTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                EdtUsnTFMouseClicked(evt);
-            }
-        });
-        EdtUsnTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EdtUsnTFActionPerformed(evt);
-            }
-        });
-        editpnl.add(EdtUsnTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 113, 165, -1));
-
-        jLabel9.setText("Edit Username:");
-        editpnl.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 141, 95, -1));
-
-        EdtNewUsnTF.setText("Enter New Username");
-        EdtNewUsnTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                EdtNewUsnTFMouseClicked(evt);
-            }
-        });
-        EdtNewUsnTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EdtNewUsnTFActionPerformed(evt);
-            }
-        });
-        editpnl.add(EdtNewUsnTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 163, 165, -1));
-
-        jLabel10.setText("Balance:");
-        editpnl.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 191, 99, -1));
-
-        EdtBlncTF.setText("0.0");
-        EdtBlncTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                EdtBlncTFMouseClicked(evt);
-            }
-        });
-        EdtBlncTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EdtBlncTFActionPerformed(evt);
-            }
-        });
-        editpnl.add(EdtBlncTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 213, 165, -1));
-
-        jLabel11.setText("VIP Status:");
-        editpnl.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, -1, -1));
-
-        EdtCb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Bronze", "Silver", "Gold" }));
-        editpnl.add(EdtCb, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, -1, -1));
-
-        jLabel16.setText("New Password:");
-        editpnl.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 89, -1, -1));
-
-        EdtPssTF.setText("Type Password");
-        EdtPssTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                EdtPssTFMouseClicked(evt);
-            }
-        });
-        EdtPssTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EdtPssTFActionPerformed(evt);
-            }
-        });
-        editpnl.add(EdtPssTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 113, 160, -1));
-
-        NewLogDtTF.setText("mm-dd-yyyy");
-        NewLogDtTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                NewLogDtTFMouseClicked(evt);
-            }
-        });
-        NewLogDtTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NewLogDtTFActionPerformed(evt);
-            }
-        });
-        editpnl.add(NewLogDtTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 163, 160, -1));
-
-        jLabel17.setText("New Login Date:");
-        editpnl.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 141, 106, -1));
-
-        SveBttn.setText("Save ");
-        SveBttn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SveBttnActionPerformed(evt);
-            }
-        });
-        editpnl.add(SveBttn, new org.netbeans.lib.awtextra.AbsoluteConstraints(166, 304, -1, -1));
-
-        jLabel19.setText("New Time Session:");
-        editpnl.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 191, -1, -1));
-
-        newEdittimeTF.setText("jTextField1");
-        newEdittimeTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newEdittimeTFActionPerformed(evt);
-            }
-        });
-        newEdittimeTF.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                newEdittimeTFKeyReleased(evt);
-            }
-        });
-        editpnl.add(newEdittimeTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 213, 160, -1));
-
-        jLabel21.setText("Logins:");
-        editpnl.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 260, -1, -1));
-
-        jTextField2.setText("0");
-        editpnl.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 260, -1, -1));
-
-        jPanel2.add(editpnl, "card2");
-        editpnl.getAccessibleContext().setAccessibleDescription("");
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel12.setText("Delete User");
-
-        DltTF.setText("Enter Username to Delete");
-        DltTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                DltTFMouseClicked(evt);
-            }
-        });
-
-        jLabel13.setText("Username:");
-
-        UserDltBttn.setText("Delete");
-
-        javax.swing.GroupLayout deletepnlLayout = new javax.swing.GroupLayout(deletepnl);
-        deletepnl.setLayout(deletepnlLayout);
-        deletepnlLayout.setHorizontalGroup(
-            deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, deletepnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel12)
-                .addGap(163, 163, 163))
-            .addGroup(deletepnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(DltTF, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(deletepnlLayout.createSequentialGroup()
-                .addGap(94, 94, 94)
-                .addComponent(jLabel13)
-                .addContainerGap(265, Short.MAX_VALUE))
-            .addGroup(deletepnlLayout.createSequentialGroup()
-                .addGap(159, 159, 159)
-                .addComponent(UserDltBttn)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        deletepnlLayout.setVerticalGroup(
-            deletepnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(deletepnlLayout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addComponent(jLabel12)
-                .addGap(50, 50, 50)
-                .addComponent(jLabel13)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(DltTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
-                .addComponent(UserDltBttn)
-                .addContainerGap(136, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(deletepnl, "card4");
-
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel14.setText("Search User");
-
-        jLabel15.setText("Username:");
-
-        SrchTF.setText("Enter Username to Delete");
-        SrchTF.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                SrchTFMouseClicked(evt);
-            }
-        });
-        SrchTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SrchTFActionPerformed(evt);
-            }
-        });
-
-        SrchUserBttn.setText("Search");
-        SrchUserBttn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SrchUserBttnActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout searchpnlLayout = new javax.swing.GroupLayout(searchpnl);
-        searchpnl.setLayout(searchpnlLayout);
-        searchpnlLayout.setHorizontalGroup(
-            searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchpnlLayout.createSequentialGroup()
-                .addContainerGap(147, Short.MAX_VALUE)
-                .addComponent(jLabel14)
-                .addGap(171, 171, 171))
-            .addGroup(searchpnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(SrchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(searchpnlLayout.createSequentialGroup()
-                .addGap(164, 164, 164)
-                .addComponent(SrchUserBttn)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        searchpnlLayout.setVerticalGroup(
-            searchpnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(searchpnlLayout.createSequentialGroup()
-                .addGap(77, 77, 77)
-                .addComponent(jLabel14)
-                .addGap(29, 29, 29)
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(SrchTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(SrchUserBttn)
-                .addContainerGap(139, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(searchpnl, "card3");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -551,19 +556,64 @@ public class mgusers extends javax.swing.JFrame {
     }                                        
 
     private void EdtBttnActionPerformed(java.awt.event.ActionEvent evt) {                                        
+
+        // Get the selected row from the JTable
+        int selectedRow = jTable1.getSelectedRow();
+
+        if (selectedRow == -1) {
+            // If no row is selected, show a warning message
+            JOptionPane.showMessageDialog(this, "Please select a user to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Retrieve data from the selected row
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        String username = (String) model.getValueAt(selectedRow, 0);
+        String userTime = (String) model.getValueAt(selectedRow, 1);
+        String balance = String.valueOf(model.getValueAt(selectedRow, 2));
+        String lastLogin = (String) model.getValueAt(selectedRow, 3);
+
+        // Populate the edit panel fields with the selected row's data
+        EdtUsnTF.setText(username);        // Username
+        newEdittimeTF.setText(userTime);   // User Time
+        EdtBlncTF.setText(balance);        // Balance
+        NewLogDtTF.setText(lastLogin);     // Last Login Date
+
+        // Switch to the edit panel
         CardLayout cl = (CardLayout) jPanel2.getLayout();
-        cl.show(jPanel2, "card2");
+        cl.show(jPanel2, "card2"); // Assuming "card2" is the edit panel
+
     }                                       
 
     private void DltBttnActionPerformed(java.awt.event.ActionEvent evt) {                                        
-        CardLayout cl = (CardLayout) jPanel2.getLayout();
-        cl.show(jPanel2, "card4");
-    }                                       
+        try {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(null, "No user selected for deletion.");
+                return;
+            }
 
-    private void SrchBttnActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        CardLayout cl = (CardLayout) jPanel2.getLayout();
-        cl.show(jPanel2, "card3");
-    }                                        
+            String usernameToDelete = (String) jTable1.getValueAt(selectedRow, 0);
+            for (int i = 0; i < users.size(); i++) {
+                JSONObject user = (JSONObject) users.get(i);
+                if (user.get("username").equals(usernameToDelete)) {
+                    users.remove(i);
+                    break;
+                }
+            }
+
+            record.put("users", users);
+            save();
+
+            // Remove table row
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.removeRow(selectedRow);
+            JOptionPane.showMessageDialog(null, "User deleted successfully!");
+        } catch (HeadlessException | IOException ex) {
+            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }                                       
 
     private void EdtPssTFActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
@@ -574,44 +624,6 @@ public class mgusers extends javax.swing.JFrame {
         // TODO add your handling code here:
     }                                          
 
-    private void SrchTFActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        // TODO add your handling code here:
-    }                                      
-
-    private void SrchUserBttnActionPerformed(java.awt.event.ActionEvent evt) {                                             
-        try {
-            filecheck(); // Load or prepare your JSON file
-
-            String usernameToSearch = SrchTF.getText().trim(); // Get username from text field
-            boolean found = false;
-
-            for (int i = 0; i < users.size(); i++) {
-                JSONObject user = (JSONObject) users.get(i);
-                if (user.get("username").equals(usernameToSearch)) {
-                    found = true;
-
-                    // Display user details
-                    String userInfo = "Username: " + user.get("username")
-                            + "\nPassword: " + user.get("password")
-                            + "\nBalance: " + user.get("amount")
-                            + "\nUsertime: " + user.get("userTime")
-                            + "\nLogins: " + user.get("logins")
-                            + "\nVIP Status: " + user.get("VipStatus");
-                    JOptionPane.showMessageDialog(null, userInfo);
-                    break;
-                }
-            }
-
-            if (!found) {
-                JOptionPane.showMessageDialog(null, "User not found.");
-            }
-
-        } catch (IOException | ParseException ex) {
-            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }                                            
-
     private void backbtn1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
 
     }                                        
@@ -621,33 +633,6 @@ public class mgusers extends javax.swing.JFrame {
     }                                           
 
     private void UserDltBttnActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        try { // Check for any necessary file operations or preparations before adding data
-            filecheck();
-
-            String usernameToDelete = DltTF.getText();
-            boolean found = false; // Flag to check if the user is found and deleted
-
-            for (int i = 0; i < users.size(); i++) { // Loop through the userlist to search for the user by username
-                JSONObject user = (JSONObject) users.get(i);
-                if (user.get("username").equals(usernameToDelete)) {
-                    users.remove(i); // Remove the user from the list
-                    found = true; // Set found to true to indicate the user was found and deleted
-                    break; // Exit the loop since the user is deleted
-                }
-            }
-
-            if (found) {  // If the user was found and deleted, update the record and show message
-                record.put("users", users); // Update the 'record' with the modified userlist
-                JOptionPane.showMessageDialog(null, "Successfully deleted.");
-            } else {
-                JOptionPane.showMessageDialog(null, "User not found.");
-            }
-            save(); // Save the updated user list to the storage 
-
-        } catch (IOException | ParseException ex) { // Catch any IOExceptions that may occur during file operations and log the error
-            Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //Catch any ParseExceptions that may occur during data processing
 
 
     }                                           
@@ -655,47 +640,40 @@ public class mgusers extends javax.swing.JFrame {
     private void SveBttnActionPerformed(java.awt.event.ActionEvent evt) {                                        
 
         try {
-            filecheck();
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(null, "No user selected for editing.");
+                return;
+            }
 
-            String usernameToSearch = EdtUsnTF.getText().trim();
+            String currentUsername = (String) jTable1.getValueAt(selectedRow, 0);
             String newUsername = EdtNewUsnTF.getText().trim();
             String newPassword = EdtPssTF.getText().trim();
             String newBalanceStr = EdtBlncTF.getText().trim();
             double newBalance = Double.parseDouble(newBalanceStr);
-            String newVip = EdtCb.getSelectedItem().toString();
+            String newVip = (String) EdtCb.getSelectedItem();
 
-            // Automatically set the current date and time
-            String newLoginDate = getCurrentDateTime();
-
-            // Calculate userTime based on new balance
-            String userTime = calculateUserTime(newBalance);
-
-            boolean found = false;
-            for (int i = 0; i < users.size(); i++) {
-                JSONObject user = (JSONObject) users.get(i);
-                if (user.get("username").equals(usernameToSearch)) {
+            for (Object obj : users) {
+                JSONObject user = (JSONObject) obj;
+                if (user.get("username").equals(currentUsername)) {
                     user.put("username", newUsername);
                     user.put("password", newPassword);
                     user.put("amount", newBalanceStr);
-                    user.put("lastLogin", newLoginDate);
                     user.put("VipStatus", newVip);
-                    user.put("userTime", userTime);
-                    found = true;
+                    user.put("userTime", calculateUserTime(newBalance));
                     break;
                 }
             }
+            save();
 
-            if (found) {
-                record.put("users", users);
-                save();
-                JOptionPane.showMessageDialog(null, "User updated successfully!");
-            } else {
-                JOptionPane.showMessageDialog(null, "User not found.");
-            }
-
-        } catch (IOException | ParseException | NumberFormatException ex) {
+            // Update table row
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setValueAt(newUsername, selectedRow, 0);
+            model.setValueAt(newBalanceStr, selectedRow, 2);
+            model.setValueAt(newVip, selectedRow, 3);
+            JOptionPane.showMessageDialog(null, "User updated successfully!");
+        } catch (HeadlessException | IOException | NumberFormatException ex) {
             Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Error updating user. Please check input values.");
         }
 
 
@@ -709,24 +687,15 @@ public class mgusers extends javax.swing.JFrame {
         // TODO add your handling code here:
     }                                     
 
-    private String formatTime(int totalMinutes) {
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-        return String.format("%02d:%02d:00", hours, minutes);
-    }
 
     private void addbtnActionPerformed(java.awt.event.ActionEvent evt) {                                       
 
         try {
-            filecheck();
-
             String username = AddUsnTF.getText().trim();
             String password = AddPssTF.getText().trim();
             String balanceStr = AddBlncTF.getText().trim();
             double balance = Double.parseDouble(balanceStr);
             String vipStatus = vipcmb.getSelectedItem().toString();
-
-            // Automatically set the current date and time
             String loginDate = getCurrentDateTime();
 
             // Check if user already exists
@@ -738,9 +707,7 @@ public class mgusers extends javax.swing.JFrame {
                 }
             }
 
-            // Calculate userTime based on balance
             String userTime = calculateUserTime(balance);
-
             JSONObject newUser = new JSONObject();
             newUser.put("username", username);
             newUser.put("password", password);
@@ -753,11 +720,12 @@ public class mgusers extends javax.swing.JFrame {
             record.put("users", users);
             save();
 
+            // Add the new user to the table
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{username, userTime, balanceStr, loginDate});
             JOptionPane.showMessageDialog(null, "User added successfully!");
-
-        } catch (IOException | ParseException | NumberFormatException ex) {
+        } catch (HeadlessException | IOException | NumberFormatException ex) {
             Logger.getLogger(mgusers.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Error adding user. Please check input values.");
         }
 
     }                                      
@@ -769,10 +737,6 @@ public class mgusers extends javax.swing.JFrame {
     private void clrbtnActionPerformed(java.awt.event.ActionEvent evt) {                                       
 
     }                                      
-
-    private void DltTFMouseClicked(java.awt.event.MouseEvent evt) {                                   
-        DltTF.setText("");
-    }                                  
 
     private void AddBlncTFActionPerformed(java.awt.event.ActionEvent evt) {                                          
 
@@ -821,10 +785,6 @@ public class mgusers extends javax.swing.JFrame {
         NewLogDtTF.setText("");        // TODO add your handling code here:
     }                                       
 
-    private void SrchTFMouseClicked(java.awt.event.MouseEvent evt) {                                    
-        SrchTF.setText("");        // TODO add your handling code here:
-    }                                   
-
     private void AddBlncTFKeyReleased(java.awt.event.KeyEvent evt) {                                      
         AddBlncTF.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -869,6 +829,19 @@ public class mgusers extends javax.swing.JFrame {
         });        // TODO add your handling code here:
     }                                         
 
+    private void srchTFKeyReleased(java.awt.event.KeyEvent evt) {                                   
+        setupTableFilter();        // TODO add your handling code here:
+    }                                  
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {                                     
+        setupRowClickListener();        // TODO add your handling code here:
+    }                                    
+
+    private void userBtnActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        CardLayout cl = (CardLayout) jPanel2.getLayout();
+        cl.show(jPanel2, "card6");        // TODO add your handling code here:
+    }                                       
+
     /**
      * @param args the command line arguments
      */
@@ -889,7 +862,7 @@ public class mgusers extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(mgusers.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
         //</editor-fold>
 
         /* Create and display the form */
@@ -915,6 +888,7 @@ public class mgusers extends javax.swing.JFrame {
                 try (FileReader reader2 = new FileReader(filepath)) {
                     record = (JSONObject) jsonParser.parse(reader2);
                     users = (JSONArray) record.get("users");
+                    loadTableData(); // Load data into the table
                 }
             }
         }
@@ -939,6 +913,81 @@ public class mgusers extends javax.swing.JFrame {
         int seconds = timeInSeconds % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
+
+    private void loadTableData() {
+        // Get the DefaultTableModel of the table
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        // Populate table rows with user data from the JSON array
+        for (Object obj : users) {
+            JSONObject user = (JSONObject) obj;
+
+            // Skip the admin user
+            if ("admin".equalsIgnoreCase((String) user.get("username"))) {
+                continue;
+            }
+
+            model.addRow(new Object[]{
+                user.get("username"),
+                user.get("userTime"),
+                user.get("amount"),
+                user.get("lastLogin")
+            });
+        }
+    }
+
+    private void setupRowSelectionListener() {
+        jTable1.getSelectionModel().addListSelectionListener(event -> {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow != -1) {
+                // Populate fields with the selected row's data
+                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                EdtUsnTF.setText((String) model.getValueAt(selectedRow, 0));
+                newEdittimeTF.setText((String) model.getValueAt(selectedRow, 1));
+                EdtBlncTF.setText(String.valueOf(model.getValueAt(selectedRow, 2)));
+                NewLogDtTF.setText((String) model.getValueAt(selectedRow, 3));
+            }
+        });
+    }
+
+    private void setupRowClickListener() {
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 1) { // Single click
+                    int selectedRow = jTable1.getSelectedRow();
+                    if (selectedRow != -1) {
+                        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                        String username = (String) model.getValueAt(selectedRow, 0);
+
+                        // Search for the user in the JSON array for additional details
+                        JSONObject userDetails = null;
+                        for (Object obj : users) {
+                            JSONObject user = (JSONObject) obj;
+                            if (user.get("username").equals(username)) {
+                                userDetails = user;
+                                break;
+                            }
+                        }
+
+                        if (userDetails != null) {
+                            // Display the user details in a dialog
+                            String userInfo = "Username: " + userDetails.get("username")
+                                    + "\nPassword: " + userDetails.get("password")
+                                    + "\nBalance: " + userDetails.get("amount")
+                                    + "\nUser Time: " + userDetails.get("userTime")
+                                    + "\nLast Login: " + userDetails.get("lastLogin")
+                                    + "\nVIP Status: " + userDetails.get("VipStatus")
+                                    + "\nLogins: " + userDetails.get("logins");
+                            JOptionPane.showMessageDialog(null, userInfo, "User Details", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
     // Variables declaration - do not modify                     
     private javax.swing.JTextField AddBlncTF;
     private javax.swing.JButton AddBttn;
@@ -946,7 +995,6 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JTextField AddPssTF;
     private javax.swing.JTextField AddUsnTF;
     private javax.swing.JButton DltBttn;
-    private javax.swing.JTextField DltTF;
     private javax.swing.JTextField EdtBlncTF;
     private javax.swing.JButton EdtBttn;
     private javax.swing.JComboBox<String> EdtCb;
@@ -954,24 +1002,15 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JTextField EdtPssTF;
     private javax.swing.JTextField EdtUsnTF;
     private javax.swing.JTextField NewLogDtTF;
-    private javax.swing.JButton SrchBttn;
-    private javax.swing.JTextField SrchTF;
-    private javax.swing.JButton SrchUserBttn;
     private javax.swing.JButton SveBttn;
-    private javax.swing.JButton UserDltBttn;
     private javax.swing.JButton addbtn;
     private javax.swing.JPanel addpnl;
     private javax.swing.JTextField addtimeTF;
     private javax.swing.JButton backbtn1;
-    private javax.swing.JPanel deletepnl;
     private javax.swing.JPanel editpnl;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -988,10 +1027,14 @@ public class mgusers extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField newEdittimeTF;
-    private javax.swing.JPanel searchpnl;
+    private javax.swing.JTextField srchTF;
+    private javax.swing.JButton userBtn;
     private javax.swing.JComboBox<String> vipcmb;
     // End of variables declaration                   
 }
